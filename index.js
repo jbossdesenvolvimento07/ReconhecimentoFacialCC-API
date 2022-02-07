@@ -20,7 +20,7 @@ app.use(express.urlencoded({ limit: '50mb' }));
 
 
 var faceMatcher;
-var labeledFaceDescriptors = [faceapi.LabeledFaceDescriptors];
+var labeledFaceDescriptors = [];
 
 
 //
@@ -90,10 +90,10 @@ app.listen(port, () => {
 async function start() {
     console.log('Carregando Faces...')
 
-    loadLabeledFaces();
+    await loadLabeledFaces();
     
     //labeledFaceDescriptors = await loadLabeledFacesFromLocalDir();
-
+    console.log(labeledFaceDescriptors)
     console.log('> Carregamento concluído <')
 }
 
@@ -134,7 +134,13 @@ function loadLabeledFaces(){
 
 
         for (let i = 0; i < teste.length; i++) {
-            const descriptions = teste[i].descriptors;
+            const descriptions = []
+            
+            //Carrega as duas imagens
+            descriptions.push(new Float32Array(teste[i].descriptors[0]));
+            descriptions.push(new Float32Array(teste[i].descriptors[1]));
+
+            //Cadastra como uma pessoa
             const newPerson = new faceapi.LabeledFaceDescriptors(teste[i].label, descriptions)
             labeledFaceDescriptors.push(newPerson)
 
@@ -142,7 +148,6 @@ function loadLabeledFaces(){
         }
 
 
-    
     });
 }
 
@@ -234,9 +239,10 @@ function loadLabeledFacesFromLocalDir() {
                 const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
                 descriptions.push(detections.descriptor)
 
+                
                 console.log(`Imagem ${i} (${label}) carregada`)
             }
-
+            //console.log(descriptions)
             return new faceapi.LabeledFaceDescriptors(label, descriptions)
         })
     )
