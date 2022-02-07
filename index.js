@@ -1,11 +1,12 @@
 
-//const tf = require('@tensorflow/tfjs-node');
+const tf = require('@tensorflow/tfjs-node');
 const express = require('express');
 const cors = require('cors');
 const app = express();
 const fs = require('fs')
 const canvas = require('canvas')
-const faceapi = require('face-api.js');
+//const faceapi = require('face-api.js');
+const faceapi = require('@vladmandic/face-api');
 
 //
 //Configurações do FaceApi
@@ -55,9 +56,9 @@ app.post('/adicionar', (req, res) => {
     console.log('------------------------------------')
 
     const label = req.body.label
-    const dataUrl = req.body.dataUrl
+    const dataUrls = [req.body.dataUrl1, req.body.dataUrl2]
 
-    adicionarPessoa(label, dataUrl, res)
+    adicionarPessoa(label, dataUrls, res)
 })
 
 //Valida uma foto
@@ -110,7 +111,7 @@ async function start() {
 
 async function saveLabeledFaces(){
     const data = JSON.stringify(labeledFaceDescriptors);
-    fs.writeFile('C:/Projetos/ReconhecimentoFacialCC-API/labeledFaces.json', data, (err) => {
+    fs.writeFile('D:/ReconhecimentoFacialCC-API/labeledFaces.json', data, (err) => {
         if (err) {
             throw err;
         }
@@ -119,7 +120,7 @@ async function saveLabeledFaces(){
 }
 
 function loadLabeledFaces(){
-    fs.readFile('C:/Projetos/ReconhecimentoFacialCC-API/labeledFaces.json', 'utf-8', (err, data) => {
+    fs.readFile('D:/ReconhecimentoFacialCC-API/labeledFaces.json', 'utf-8', (err, data) => {
         if (err) {
             throw err;
         }
@@ -160,18 +161,40 @@ function loadLabeledFaces(){
 
 
 
-async function adicionarPessoa(label, dataUrl, res){
-    let image = new Image()
-    image.src = dataUrl;
+async function adicionarPessoa(label, dataUrls, res){
+    
+    /*let images = [];
+    for (let i = 0; i < 2; i++) {
+        let img = new Image();
+        img.src = dataUrls[i]
+        
+        images.push(img)
+    }
+
+    console.log(typeof(images[0]))
+    console.log('Criando dados de geometria ...')
     
     const descriptions = []
-    for (let i = 1; i <= 2; i++) {
-        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
+    for (let i = 0; i < 2; i++) {
+        const detections = await faceapi.detectSingleFace(images[i]).withFaceLandmarks().withFaceDescriptor()
         descriptions.push(detections.descriptor)
-    }
+    }*/
+
+    let img1 = new Image();
+    img1.src = dataUrls[0]
+    let img2 = new Image();
+    img2.src = dataUrls[1]
+
+    const descriptions = [];
+    const detections1 = await faceapi.detectSingleFace(img1).withFaceLandmarks().withFaceDescriptor()
+    descriptions.push(detections1.descriptor)
+    const detections2 = await faceapi.detectSingleFace(img2).withFaceLandmarks().withFaceDescriptor()
+    descriptions.push(detections2.descriptor)
 
     const newPerson = new faceapi.LabeledFaceDescriptors(label, descriptions)
     labeledFaceDescriptors.push(newPerson)
+
+    console.log('> Cadastro completo <')
 
     res.set({
         "Content-Type": "application/json",
