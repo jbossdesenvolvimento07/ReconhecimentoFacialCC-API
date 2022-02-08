@@ -1,11 +1,12 @@
 
-//const tf = require('@tensorflow/tfjs-node');
+const tf = require('@tensorflow/tfjs-node');
 const express = require('express');
 const cors = require('cors');
 const app = express();
 const fs = require('fs')
 const canvas = require('canvas')
-const faceapi = require('face-api.js');
+//const faceapi = require('face-api.js');
+const faceapi = require('@vladmandic/face-api');
 
 //
 //Configurações do FaceApi
@@ -48,6 +49,30 @@ app.get('/salvar', (req, res) => {
     res.send(labeledFaceDescriptors)
 })
 
+app.get('/zerar', (req, res) => {
+
+    labeledFaceDescriptors = []
+
+    res.set({
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "*"
+    });
+    res.send(labeledFaceDescriptors)
+})
+
+app.get('/carregar', (req, res) => {
+
+    loadLabeledFaces()
+
+    res.set({
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "*"
+    });
+    res.send(labeledFaceDescriptors)
+})
+
 //Adiciona Uma pessoa
 app.post('/adicionar', (req, res) => {
 
@@ -55,9 +80,9 @@ app.post('/adicionar', (req, res) => {
     console.log('------------------------------------')
 
     const label = req.body.label
-    const dataUrl = req.body.dataUrl
+    const dataUrls = [req.body.dataUrl1, req.body.dataUrl2]
 
-    adicionarPessoa(label, dataUrl, res)
+    adicionarPessoa(label, dataUrls, res)
 })
 
 //Valida uma foto
@@ -67,6 +92,9 @@ app.post('/validar', (req, res) => {
     console.log('------------------------------------')
 
 
+    //console.log(req.body)
+
+    //res.send(req.body)
     const dataUrl = req.body.dataUrl;
     detectFace(dataUrl, res);
 })
@@ -90,11 +118,10 @@ app.listen(port, () => {
 async function start() {
     console.log('Carregando Faces...')
 
-    await loadLabeledFaces();
+    loadLabeledFaces();
     
     //labeledFaceDescriptors = await loadLabeledFacesFromLocalDir();
-    console.log(labeledFaceDescriptors)
-    console.log('> Carregamento concluído <')
+    
 }
 
 
@@ -110,7 +137,7 @@ async function start() {
 
 async function saveLabeledFaces(){
     const data = JSON.stringify(labeledFaceDescriptors);
-    fs.writeFile('C:/Projetos/ReconhecimentoFacialCC-API/labeledFaces.json', data, (err) => {
+    fs.writeFile('D:/ReconhecimentoFacialCC-API/labeledFaces.json', data, (err) => {
         if (err) {
             throw err;
         }
@@ -119,7 +146,7 @@ async function saveLabeledFaces(){
 }
 
 function loadLabeledFaces(){
-    fs.readFile('C:/Projetos/ReconhecimentoFacialCC-API/labeledFaces.json', 'utf-8', (err, data) => {
+    fs.readFile('D:/ReconhecimentoFacialCC-API/labeledFaces.json', 'utf-8', (err, data) => {
         if (err) {
             throw err;
         }
@@ -144,10 +171,10 @@ function loadLabeledFaces(){
             const newPerson = new faceapi.LabeledFaceDescriptors(teste[i].label, descriptions)
             labeledFaceDescriptors.push(newPerson)
 
-            console.log('CADASTRADO')
+            console.log(`Face carregada... (${teste[i].label})`)
         }
 
-
+        console.log('> Carregamento concluído <')
     });
 }
 
@@ -158,30 +185,70 @@ function loadLabeledFaces(){
 
 
 
-
-
-async function adicionarPessoa(label, dataUrl, res){
-    let image = new Image()
-    image.src = dataUrl;
+async function adicionarPessoa(label, dataUrls, res){
     
-    const descriptions = []
-    for (let i = 1; i <= 2; i++) {
-        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
-        descriptions.push(detections.descriptor)
+    /*let images = [];
+    for (let i = 0; i < 2; i++) {
+        let img = new Image();
+        img.src = dataUrls[i]
+        
+        images.push(img)
     }
 
-    const newPerson = new faceapi.LabeledFaceDescriptors(label, descriptions)
-    labeledFaceDescriptors.push(newPerson)
+    console.log(typeof(images[0]))
+    console.log('Criando dados de geometria ...')
+    
+    const descriptions = []
+    for (let i = 0; i < 2; i++) {
+        const detections = await faceapi.detectSingleFace(images[i]).withFaceLandmarks().withFaceDescriptor()
+        descriptions.push(detections.descriptor)
+    }*/
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
-    res.send({"Status": "Cadastrado"})
+    let img1 = new Image();
+    
+    let img2 = new Image();
+    
+    
+    try{
+        img1.src = dataUrls[0];
+        img2.src = dataUrls[1];
+
+        const descriptions = [];
+        const detections1 = await faceapi.detectSingleFace(img1).withFaceLandmarks().withFaceDescriptor()
+        descriptions.push(detections1.descriptor)
+        const detections2 = await faceapi.detectSingleFace(img2).withFaceLandmarks().withFaceDescriptor()
+        descriptions.push(detections2.descriptor)
+
+        const newPerson = new faceapi.LabeledFaceDescriptors(label, descriptions)
+        labeledFaceDescriptors.push(newPerson)
+
+        console.log('> Cadastro completo <')
+
+        res.set({
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Origin": "*",
+        });
+    
+        res.send([[img1, img2] , {"Status": "Cadastrado"}])
+    
+    
+        saveLabeledFaces();
+
+    }catch{
+
+        res.set({
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Origin": "*",
+        });
+    
+        res.send([[img1, img2] , {"Status": "Falha"}])
+
+    }
 
 
-    saveLabeledFaces();
+
 }
 
 async function detectFace( dataUrl, res ){
@@ -189,7 +256,7 @@ async function detectFace( dataUrl, res ){
     let image = new Image()
     image.src = dataUrl;
 
-    faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
+    faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5)
     
     console.log('Imagem convertida... ')
     
@@ -199,12 +266,20 @@ async function detectFace( dataUrl, res ){
     console.log('> Reconhecimento <')
     console.log(results)
 
+
     res.set({
         "Content-Type": "application/json",
         "Access-Control-Allow-Credentials": "true",
         "Access-Control-Allow-Origin": "*",
     });
-    res.send(results)
+
+
+    
+    
+    if(results.length > 0 )
+        res.send([image, results])
+    else
+        res.send([image, [{'_label': 'notFound', '_distance': '0.0'}]])
 }
 
 
@@ -230,7 +305,7 @@ async function detectFace( dataUrl, res ){
 
 
 function loadLabeledFacesFromLocalDir() {
-    const labels = ['Vitor Bersani', 'Andre']
+    const labels = ['Waldir']
     return Promise.all(
         labels.map(async label => {
             const descriptions = []
@@ -246,5 +321,6 @@ function loadLabeledFacesFromLocalDir() {
             return new faceapi.LabeledFaceDescriptors(label, descriptions)
         })
     )
+    
 }
 

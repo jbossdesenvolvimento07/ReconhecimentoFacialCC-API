@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tensorflow/tfjs": "^3.13.0",
     "@tensorflow/tfjs-node": "^3.13.0",
+    "@vladmandic/face-api": "^1.6.5",
     "canvas": "^2.9.0",
     "cors": "^2.8.5",
     "express": "^4.17.2",
