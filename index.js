@@ -101,7 +101,7 @@ app.post('/validar', (req, res) => {
 
 
 //Configura o listener e carrega redes neurais
-const port = 3030;
+const port = 6061;
 app.listen(port, () => {
     console.log('Listening on port ' + port)
 
