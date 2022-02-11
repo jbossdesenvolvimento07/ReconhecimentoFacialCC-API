@@ -17,7 +17,11 @@ module.exports = (req, res, dados) => {
             let image = new Image();
             image.src = dataUrls[i];
 
-            const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
+            let detections
+            //const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
+            faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
+            .then((result) => detections = result)
+            
             descriptions.push(detections.descriptor)
             
         }
