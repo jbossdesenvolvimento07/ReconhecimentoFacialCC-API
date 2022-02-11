@@ -80,8 +80,7 @@ app.get('/carregar', (req, res) => {
 //Adiciona Uma pessoa
 app.post('/cadastrar', (req, res) => {
 
-    console.log('\nInício da requisição')
-    console.log('------------------------------------')
+    console.log('\n> Requisição de cadastro recebida')
 
     const label = req.body.label
     const dataUrls = [req.body.dataUrl1, req.body.dataUrl2]
