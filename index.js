@@ -18,6 +18,10 @@ app.use(cors())
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb' }));
 
+//
+//Controllers
+const cadastro = require('./controllers/cadastro')
+
 
 
 var faceMatcher;
@@ -74,7 +78,7 @@ app.get('/carregar', (req, res) => {
 })
 
 //Adiciona Uma pessoa
-app.post('/adicionar', (req, res) => {
+app.post('/cadastrar', (req, res) => {
 
     console.log('\nInício da requisição')
     console.log('------------------------------------')
@@ -82,7 +86,15 @@ app.post('/adicionar', (req, res) => {
     const label = req.body.label
     const dataUrls = [req.body.dataUrl1, req.body.dataUrl2]
 
-    adicionarPessoa(label, dataUrls, res)
+    const dados = [label, dataUrls]
+
+    cadastro(req, res, dados)
+    .then((newPerson) => {
+        labeledFaceDescriptors.push(newPerson)
+        console.log('> Pessoa Cadastrada <')
+    });
+
+    //adicionarPessoa(label, dataUrls, res)
 })
 
 //Valida uma foto
@@ -115,7 +127,7 @@ app.listen(port, () => {
     ]).then(start)
 })
 
-async function start() {
+async function start() { 
     console.log('Carregando Faces...')
 
     loadLabeledFaces();
