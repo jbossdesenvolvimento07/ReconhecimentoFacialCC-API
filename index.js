@@ -20,7 +20,8 @@ app.use(express.urlencoded({ limit: '50mb' }));
 
 //
 //Controllers
-const cadastro = require('./controllers/cadastro')
+const cadastro = require('./controllers/cadastro');
+const validacao = require('./controllers/validacao');
 
 
 
@@ -81,6 +82,7 @@ app.get('/carregar', (req, res) => {
 app.post('/cadastrar', (req, res) => {
 
     console.log('\n> Requisição de cadastro recebida')
+    console.log('----------------------------------')
 
     const label = req.body.label
     const dataUrls = [req.body.dataUrl1, req.body.dataUrl2]
@@ -90,8 +92,14 @@ app.post('/cadastrar', (req, res) => {
     cadastro(req, res, dados)
     .then((newPerson) => {
         labeledFaceDescriptors.push(newPerson)
-        console.log('> Pessoa Cadastrada <')
-    });
+        console.log('> cadastro efetuado <')
+
+        faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5)
+        console.log('> FaceMatcher atualizado <')
+    })
+    .catch(
+        console.log('> Erro no cadastro <')
+    );
 
     //adicionarPessoa(label, dataUrls, res)
 })
@@ -99,15 +107,19 @@ app.post('/cadastrar', (req, res) => {
 //Valida uma foto
 app.post('/validar', (req, res) => {
     
-    console.log('\nInício da requisição')
+    console.log('\n> Requisição de validação recebida')
     console.log('------------------------------------')
 
-
-    //console.log(req.body)
-
-    //res.send(req.body)
     const dataUrl = req.body.dataUrl;
-    detectFace(dataUrl, res);
+
+    const dados = [dataUrl]
+    
+    validacao(req, res, dados, faceMatcher)
+    .then()
+    .catch( 
+        console.log('> Erro na validação <')
+    )
+    //detectFace(dataUrl, res);
 })
 
 
@@ -188,129 +200,6 @@ function loadLabeledFaces(){
         console.log('> Carregamento concluído <')
     });
 }
-
-
-
-
-
-
-
-
-async function adicionarPessoa(label, dataUrls, res){
-    
-    /*let images = [];
-    for (let i = 0; i < 2; i++) {
-        let img = new Image();
-        img.src = dataUrls[i]
-        
-        images.push(img)
-    }
-
-    console.log(typeof(images[0]))
-    console.log('Criando dados de geometria ...')
-    
-    const descriptions = []
-    for (let i = 0; i < 2; i++) {
-        const detections = await faceapi.detectSingleFace(images[i]).withFaceLandmarks().withFaceDescriptor()
-        descriptions.push(detections.descriptor)
-    }*/
-
-    let img1 = new Image();
-    
-    let img2 = new Image();
-    
-    
-    try{
-        img1.src = dataUrls[0];
-        img2.src = dataUrls[1];
-
-        const descriptions = [];
-        const detections1 = await faceapi.detectSingleFace(img1).withFaceLandmarks().withFaceDescriptor()
-        descriptions.push(detections1.descriptor)
-        const detections2 = await faceapi.detectSingleFace(img2).withFaceLandmarks().withFaceDescriptor()
-        descriptions.push(detections2.descriptor)
-
-        const newPerson = new faceapi.LabeledFaceDescriptors(label, descriptions)
-        labeledFaceDescriptors.push(newPerson)
-
-        console.log('> Cadastro completo <')
-
-        res.set({
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": "true",
-            "Access-Control-Allow-Origin": "*",
-        });
-    
-        res.send([[img1, img2] , {"Status": "Cadastrado"}])
-    
-    
-        saveLabeledFaces();
-
-    }catch{
-
-        res.set({
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": "true",
-            "Access-Control-Allow-Origin": "*",
-        });
-    
-        res.send([[img1, img2] , {"Status": "Falha"}])
-
-    }
-
-
-
-}
-
-async function detectFace( dataUrl, res ){
-
-    let image = new Image()
-    image.src = dataUrl;
-
-    faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5)
-    
-    console.log('Imagem convertida... ')
-    
-    const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
-    console.log('Face detectada...')
-    const results = await detections.map( (d) => faceMatcher.findBestMatch(d.descriptor))
-    console.log('> Reconhecimento <')
-    console.log(results)
-
-
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
-
-
-    
-    
-    if(results.length > 0 )
-        res.send([image, results])
-    else
-        res.send([image, [{'_label': 'notFound', '_distance': '0.0'}]])
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
