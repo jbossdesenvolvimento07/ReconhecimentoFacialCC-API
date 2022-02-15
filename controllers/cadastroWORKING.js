@@ -8,22 +8,6 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function salvarFotos(dados){
-    if (!fs.existsSync(`./fotos/${dados[0]}`)){
-        fs.mkdirSync(`./fotos/${dados[0]}`);
-    }
-
-    for (let i = 0; i < dados[1].length; i++) {
-        fs.writeFile(`./fotos/${dados[0]}/imagem${i}.txt`, dados[1][i], (err) => {
-            if(err) {
-                return console.log(err);
-            }
-            console.log("Foto Salva");
-        });
-    }
-}
-
-
 module.exports = async (req, res, dados) => {
 
     res.set({
@@ -36,28 +20,43 @@ module.exports = async (req, res, dados) => {
     const label = dados[0];
     const dataUrls = dados[1];
 
+    //const descriptions = [];
 
-    const descriptions = [];
-    let image = new Image()
-    let detections = []
+
+
+    let image1 = new Image()
+    let image2 = new Image()
+    let image3 = new Image()
+    let image4 = new Image()
+    let image5 = new Image()
 
     try{
+        image1.src = dataUrls[0]
+        image2.src = dataUrls[1]
+        image3.src = dataUrls[2]
+        image4.src = dataUrls[3]
+        image5.src = dataUrls[4]
 
-        for (let i = 0; i < dataUrls.length; i++) {
-            
-            image.src = dataUrls[i]
+        console.log('esperando')
+        await sleep(5000);
+         console.log('esperado')
 
-            detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
-            descriptions.push(detections.descriptor)
-            
-        }
-        
+        const descriptions = [];
+
+        const detections1 = await faceapi.detectSingleFace(image1).withFaceLandmarks().withFaceDescriptor()
+        descriptions.push(detections1.descriptor)
+        const detections2 = await faceapi.detectSingleFace(image2).withFaceLandmarks().withFaceDescriptor()
+        descriptions.push(detections2.descriptor)
+        const detections3 = await faceapi.detectSingleFace(image3).withFaceLandmarks().withFaceDescriptor()
+        descriptions.push(detections3.descriptor)
+        const detections4 = await faceapi.detectSingleFace(image4).withFaceLandmarks().withFaceDescriptor()
+        descriptions.push(detections4.descriptor)
+        const detections5 = await faceapi.detectSingleFace(image5).withFaceLandmarks().withFaceDescriptor()
+        descriptions.push(detections5.descriptor)
 
         const newPerson = new faceapi.LabeledFaceDescriptors(label, descriptions)
 
         res.send([dataUrls , {"Status": "Cadastrado"}])
-
-        salvarFotos(dados)
 
         return newPerson
 

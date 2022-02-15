@@ -1,7 +1,41 @@
 const faceapi = require('@vladmandic/face-api')
 const canvas = require('canvas')
+const fs = require('fs')
 const { Canvas, Image, ImageData } = canvas
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData })
+const sql = require('mssql');
+
+function getDadosSocio(){
+        var config = {
+        user:  'jboss.consulta.06',
+        password: 'consulta06@jboss',
+        server:  'encopelx.no-ip.biz', 
+        port:  5023,
+        database:  'JM2Online_OLD' ,
+        requestTimeout: 60000,
+        options: {
+            encrypt: false,
+            enableArithAbort: true
+        }
+    };
+
+    sql.connect(config, (err) => {
+        if (err) console.log(err)
+
+        const qry = `SELECT * FROM Entidades e WHERE cnpjCPF = ${ '' }`
+
+        new sql.Request().query(qry, (err, result) => {
+            if (err) { 
+                console.log('Erro vendedor: ' + err.message)
+
+            }
+            else { 
+                
+                //dados = result.recordset[0];
+            }
+        })
+    })
+}
 
 module.exports = async (req, res, dados, faceMatcher) => {
     
@@ -24,10 +58,21 @@ module.exports = async (req, res, dados, faceMatcher) => {
             "Access-Control-Allow-Origin": "*",
         });
     
-        if(results.length > 0 )
-            res.send([image, results])
-        else
-            res.send([image, [{'_label': 'notFound', '_distance': '0.0'}]])
+
+        const images = []
+        if(results.length > 0 ){
+
+            for (let i = 0; i < results.length; i++) {
+
+                images.push(fs.readFileSync(`D:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'))
+                
+            }
+
+            res.send([images, results])
+        }
+        else {
+            res.send([images, [{'_label': 'notFound', '_distance': '0.0'}]])
+        }
 
     }catch (err){
 

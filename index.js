@@ -84,22 +84,36 @@ app.post('/cadastrar', (req, res) => {
     console.log('\n> Requisição de cadastro recebida')
     console.log('----------------------------------')
 
-    const label = req.body.label
-    const dataUrls = [req.body.dataUrl1, req.body.dataUrl2]
+    /*const label = req.body.label
+    const dataUrls = [req.body.dataUrl1, req.body.dataUrl2]*/
 
-    const dados = [label, dataUrls]
+    const dados = [req.body.label, req.body.dataUrls]
 
-    cadastro(req, res, dados)
+
+    /*cadastro(req, res, dados)
     .then((newPerson) => {
         labeledFaceDescriptors.push(newPerson)
-        console.log('> cadastro efetuado <')
+        console.log('> Cadastro efetuado <')
 
         faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5)
         console.log('> FaceMatcher atualizado <')
     })
     .catch(
         console.log('> Erro no cadastro <')
-    );
+    );*/
+
+    cadastro(req, res, dados)
+    .then((newPerson) => {
+        labeledFaceDescriptors.push(newPerson)
+        console.log('> Cadastro efetuado <')
+
+        faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5)
+        console.log('> FaceMatcher atualizado <')
+    })
+    .catch(()=>{
+        console.log('> Erro no cadastro <')
+    })
+    //console.log(resposta)
 
     //adicionarPessoa(label, dataUrls, res)
 })
@@ -116,9 +130,10 @@ app.post('/validar', (req, res) => {
     
     validacao(req, res, dados, faceMatcher)
     .then()
-    .catch( 
+    .catch((err)=>{
         console.log('> Erro na validação <')
-    )
+        console.log(err)
+    })
     //detectFace(dataUrl, res);
 })
 
@@ -197,6 +212,8 @@ function loadLabeledFaces(){
             console.log(`Face carregada... (${teste[i].label})`)
         }
 
+        faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5)
+        
         console.log('> Carregamento concluído <')
     });
 }
