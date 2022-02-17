@@ -107,7 +107,7 @@ app.post('/cadastrar', (req, res) => {
         labeledFaceDescriptors.push(newPerson)
         console.log('> Cadastro efetuado <')
 
-        faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5)
+        gerarFaceMatcher()
         console.log('> FaceMatcher atualizado <')
     })
     .catch(()=>{
@@ -164,7 +164,9 @@ async function start() {
 
 
 
-
+function gerarFaceMatcher(){
+    faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5)
+}
 
 
 
@@ -212,8 +214,8 @@ function loadLabeledFaces(){
             console.log(`Face carregada... (${teste[i].label})`)
         }
 
-        faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5)
-        
+        gerarFaceMatcher()
+
         console.log('> Carregamento concluído <')
     });
 }

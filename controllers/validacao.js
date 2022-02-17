@@ -63,8 +63,11 @@ module.exports = async (req, res, dados, faceMatcher) => {
         if(results.length > 0 ){
 
             for (let i = 0; i < results.length; i++) {
-
-                images.push(fs.readFileSync(`D:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'))
+                
+                if(results[i]._label === 'unknown')
+                    images.push('')
+                else
+                    images.push(fs.readFileSync(`D:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'))
                 
             }
 
