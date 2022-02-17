@@ -79,7 +79,7 @@ app.get('/carregar', (req, res) => {
     res.send(labeledFaceDescriptors)
 })
 
-app.get('/getDadosuser', (req, res) => {
+app.post('/getDadosUser', (req, res) => {
 
     console.log('\n> Requisição de dados recebida')
     console.log('----------------------------------')

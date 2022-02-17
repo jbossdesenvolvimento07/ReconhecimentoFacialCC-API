@@ -3,9 +3,9 @@ const sql = require('mssql')
 var config = {
     user: 'jboss.consulta.06',
     password: 'consulta06@jboss',
-    server: 'encopelx.no-ip.biz',
-    port: 5023,
-    database: 'JM2Online_OLD',
+    server: 'ccclube.no-ip.biz',
+    port: 1433,
+    database: 'CCONLINE_OLD',
     requestTimeout: 60000,
     options: {
         encrypt: false,
@@ -20,18 +20,15 @@ module.exports = async (req, res, cpf) => {
         "Access-Control-Allow-Origin": "*",
     });
 
-
     try{
 
-        sql.connect(config, (err) => {
-            if (err) console.log(err)
-        })
-        let qry = `SELECT * FROM Entidades WHERE dbo.ExtractInteger(cnpjCPF) = ${cpf} AND dataFinal IS NULL`
+        await sql.connect(config)
+        let qry = `SELECT * FROM associados WHERE dbo.ExtractInteger(cpf) = '${cpf}'`
         let result = await sql.query(qry)
 
-        console.log(result)
+        console.log(result.recordset[0])
 
-        //res.send(result)
+        res.send(result.recordset[0])
 
     }catch(err){
 

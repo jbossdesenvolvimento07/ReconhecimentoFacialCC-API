@@ -5,13 +5,14 @@ const { Canvas, Image, ImageData } = canvas
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData })
 const sql = require('mssql');
 
-function getDadosSocio(){
-        var config = {
-        user:  'jboss.consulta.06',
+async function getDadosSocio(codigo){
+
+    var config = {
+        user: 'jboss.consulta.06',
         password: 'consulta06@jboss',
-        server:  'encopelx.no-ip.biz', 
-        port:  5023,
-        database:  'JM2Online_OLD' ,
+        server: 'ccclube.no-ip.biz',
+        port: 1433,
+        database: 'CCONLINE_OLD',
         requestTimeout: 60000,
         options: {
             encrypt: false,
@@ -19,22 +20,19 @@ function getDadosSocio(){
         }
     };
 
-    sql.connect(config, (err) => {
-        if (err) console.log(err)
+    try{
 
-        const qry = `SELECT * FROM Entidades e WHERE cnpjCPF = ${ '' }`
+        await sql.connect(config)
+        let qry = `SELECT * FROM associados WHERE CODIGO = '${codigo}'`
+        let result = await sql.query(qry)
 
-        new sql.Request().query(qry, (err, result) => {
-            if (err) { 
-                console.log('Erro vendedor: ' + err.message)
+        return result.recordset[0]
 
-            }
-            else { 
-                
-                //dados = result.recordset[0];
-            }
-        })
-    })
+    }catch(err){
+
+        throw(err)
+
+    }
 }
 
 module.exports = async (req, res, dados, faceMatcher) => {
@@ -60,21 +58,25 @@ module.exports = async (req, res, dados, faceMatcher) => {
     
 
         const images = []
+        const dadosSocio = []
         if(results.length > 0 ){
 
             for (let i = 0; i < results.length; i++) {
                 
                 if(results[i]._label === 'unknown')
                     images.push('')
-                else
+                else{
                     images.push(fs.readFileSync(`D:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'))
+                    dadosSocio.push(await getDadosSocio(results[i]._label))
+
+                }
                 
             }
 
-            res.send([images, results])
+            res.send([images, dadosSocio, results])
         }
         else {
-            res.send([images, [{'_label': 'notFound', '_distance': '0.0'}]])
+            res.send([images, dadosSocio, [{'_label': 'notFound', '_distance': '0.0'}]])
         }
 
     }catch (err){
