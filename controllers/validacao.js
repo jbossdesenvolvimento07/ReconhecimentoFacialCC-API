@@ -35,6 +35,8 @@ async function getDadosSocio(codigo){
     }
 }
 
+
+
 module.exports = async (req, res, dados, faceMatcher) => {
     
     let image = new Image()
@@ -42,7 +44,61 @@ module.exports = async (req, res, dados, faceMatcher) => {
 
     console.log('Imagem convertida... ')
 
+
     try{
+
+        const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
+        console.log('Face detectada...')
+        const results = await detections.map( (d) => faceMatcher.findBestMatch(d.descriptor))
+        console.log('> Reconhecimento <')
+        console.log(results)
+
+        res.set({
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Origin": "*",
+        });
+    
+
+        const associados = []
+
+        if(results.length > 0 ){
+
+            for (let i = 0; i < results.length; i++) {
+                
+                if(results[i]._label === 'unknown'){
+                    associados.push({
+                        'foto': '',
+                        'dados': 'unknown'
+                    })
+                }
+                else{
+                    
+                    associados.push({
+                        'foto': fs.readFileSync(`D:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
+                        'dados': await getDadosSocio(results[i]._label)
+                    })
+                    
+
+                }
+                
+            }
+
+        }
+
+        res.send(associados)
+
+
+
+    }catch (err){
+
+        throw(err)
+
+    }
+
+
+
+    /*try{
 
         const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
         console.log('Face detectada...')
@@ -63,8 +119,10 @@ module.exports = async (req, res, dados, faceMatcher) => {
 
             for (let i = 0; i < results.length; i++) {
                 
-                if(results[i]._label === 'unknown')
+                if(results[i]._label === 'unknown'){
                     images.push('')
+                    dadosSocio.push({"CODIGO": "unknown"})
+                }
                 else{
                     images.push(fs.readFileSync(`D:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'))
                     dadosSocio.push(await getDadosSocio(results[i]._label))
@@ -83,6 +141,6 @@ module.exports = async (req, res, dados, faceMatcher) => {
 
         throw(err)
 
-    }
+    }*/
 
 }
