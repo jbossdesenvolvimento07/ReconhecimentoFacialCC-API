@@ -23,7 +23,9 @@ module.exports = async (req, res, cpf) => {
     try{
 
         await sql.connect(config)
-        let qry = `SELECT * FROM associados WHERE dbo.ExtractInteger(cpf) = '${cpf}'`
+        let qry = ` SELECT a.*, rf.status statusRF FROM associados a
+                    LEFT JOIN dbo.ReconhecimentoFacial rf ON a.CODIGO = rf.codigoAssociado 
+                    WHERE dbo.ExtractInteger(a.cpf) = '${cpf}'`
         let result = await sql.query(qry)
 
         console.log(result.recordset[0])

@@ -102,6 +102,8 @@ app.post('/cadastrar', (req, res) => {
 
         gerarFaceMatcher()
         console.log('> FaceMatcher atualizado <')
+
+        saveLabeledFaces()
     })
     .catch(()=>{
         console.log('> Erro no cadastro <')
@@ -125,6 +127,23 @@ app.post('/validar', (req, res) => {
         console.log('> Erro na validação <')
         console.log(err)
     })
+    //detectFace(dataUrl, res);
+})
+app.post('/remover', (req, res) => {
+    
+    console.log('\n> Requisição de remoção recebida')
+    console.log('------------------------------------')
+
+    /*const dataUrl = req.body.dataUrl;
+
+    const dados = [dataUrl]
+    
+    validacao(req, res, dados, faceMatcher)
+    .then()
+    .catch((err)=>{
+        console.log('> Erro na validação <')
+        console.log(err)
+    })*/
     //detectFace(dataUrl, res);
 })
 

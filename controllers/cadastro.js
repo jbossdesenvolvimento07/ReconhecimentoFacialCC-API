@@ -3,9 +3,31 @@ const canvas = require('canvas')
 const fs = require('fs')
 const { Canvas, Image, ImageData } = canvas
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData })
+const sql = require('mssql')
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function cadastrarNoBanco(codigoAssociado){
+    var config = {
+        user: 'jboss.consulta.06',
+        password: 'consulta06@jboss',
+        server: 'ccclube.no-ip.biz',
+        port: 1433,
+        database: 'CCONLINE_OLD',
+        requestTimeout: 60000,
+        options: {
+            encrypt: false,
+            enableArithAbort: true
+        }
+    };
+
+    //Status: A = Ativo
+    await sql.connect(config)
+    let qry = `INSERT INTO ReconhecimentoFacial(codigoAssociado, dataCadastro, status) VALUES('${codigoAssociado}', GETDATE(), 'A' );`
+    sql.query(qry)
+
 }
 
 function salvarFotos(dados){
@@ -58,6 +80,8 @@ module.exports = async (req, res, dados) => {
         res.send([dataUrls , {"Status": "Cadastrado"}])
 
         salvarFotos(dados)
+
+        cadastrarNoBanco(dados[0])
 
         return newPerson
 
