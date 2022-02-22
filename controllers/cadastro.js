@@ -5,11 +5,8 @@ const { Canvas, Image, ImageData } = canvas
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData })
 const sql = require('mssql')
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
-async function cadastrarNoBanco(codigoAssociado){
+async function cadastrarNoBanco(dados){
     var config = {
         user: 'jboss.consulta.06',
         password: 'consulta06@jboss',
@@ -25,7 +22,7 @@ async function cadastrarNoBanco(codigoAssociado){
 
     //Status: A = Ativo
     await sql.connect(config)
-    let qry = `INSERT INTO ReconhecimentoFacial(codigoAssociado, dataCadastro, status) VALUES('${codigoAssociado}', GETDATE(), 'A' );`
+    let qry = `INSERT INTO ReconhecimentoFacial(codigoAssociado, dataCadastro, status) VALUES('${dados[0]}', GETDATE(), 'A' );`
     sql.query(qry)
 
 }
@@ -81,7 +78,7 @@ module.exports = async (req, res, dados) => {
 
         salvarFotos(dados)
 
-        cadastrarNoBanco(dados[0])
+        cadastrarNoBanco(dados)
 
         return newPerson
 
@@ -91,27 +88,6 @@ module.exports = async (req, res, dados) => {
 
         throw(err)
     }
-
-
-    /*try{
-       
-
-
-        if (!fs.existsSync(`./fotos/${label}`)){
-            fs.mkdirSync(`./fotos/${label}`);
-        }
-
-        for (let i = 0; i < dataUrls.length; i++) {
-            fs.writeFile(`./fotos/${label}/imagem${i}.txt`, dataUrls[i], (err) => {
-                if(err) {
-                    return console.log(err);
-                }
-                console.log("Foto Salva");
-            });
-        }
-
-        
-    }*/
 
     
     

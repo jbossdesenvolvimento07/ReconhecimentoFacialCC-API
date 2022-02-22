@@ -24,6 +24,12 @@ const cadastro = require('./controllers/cadastro');
 const validacao = require('./controllers/validacao');
 const getDadosUser = require('./controllers/getDadosUser');
 
+//
+//Configs
+let config = {
+    'distanceThreshold': 0.5
+}
+
 
 
 var faceMatcher;
@@ -43,6 +49,7 @@ app.get('/', (req, res) => {
     res.send(labeledFaceDescriptors)
 })
 
+//Salva usuários carregados em json
 app.get('/salvar', (req, res) => {
 
     saveLabeledFaces()
@@ -55,6 +62,8 @@ app.get('/salvar', (req, res) => {
     res.send(labeledFaceDescriptors)
 })
 
+//-----------------------------------------
+//APAGAR APAGAR APAGAR APAGAR APAGAR APAGAR
 app.get('/zerar', (req, res) => {
 
     labeledFaceDescriptors = []
@@ -66,7 +75,10 @@ app.get('/zerar', (req, res) => {
     });
     res.send(labeledFaceDescriptors)
 })
+//APAGAR APAGAR APAGAR APAGAR APAGAR APAGAR
+//-----------------------------------------
 
+//Carrega faces salvas em json
 app.get('/carregar', (req, res) => {
 
     loadLabeledFaces()
@@ -79,6 +91,36 @@ app.get('/carregar', (req, res) => {
     res.send(labeledFaceDescriptors)
 })
 
+//Seta a configuração
+app.post('/setConfig', (req, res) => {
+
+    config = req.body
+
+    gerarFaceMatcher()
+
+    res.set({
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "*"
+    });
+    res.send(config)
+
+})
+
+//retorna a configuração atual
+app.get('/getConfig', (req, res) => {
+
+    res.set({
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "*"
+    });
+    res.send(config)
+    
+})
+
+
+//Retorna os dados do usuário de acordo com o cpf
 app.post('/getDadosUser', (req, res) => {
 
     console.log('\n> Requisição de dados recebida')
@@ -101,7 +143,6 @@ app.post('/cadastrar', (req, res) => {
         console.log('> Cadastro efetuado <')
 
         gerarFaceMatcher()
-        console.log('> FaceMatcher atualizado <')
 
         saveLabeledFaces()
     })
@@ -129,22 +170,14 @@ app.post('/validar', (req, res) => {
     })
     //detectFace(dataUrl, res);
 })
+
+//Remove uma pessoa
 app.post('/remover', (req, res) => {
     
     console.log('\n> Requisição de remoção recebida')
     console.log('------------------------------------')
 
-    /*const dataUrl = req.body.dataUrl;
-
-    const dados = [dataUrl]
     
-    validacao(req, res, dados, faceMatcher)
-    .then()
-    .catch((err)=>{
-        console.log('> Erro na validação <')
-        console.log(err)
-    })*/
-    //detectFace(dataUrl, res);
 })
 
 
@@ -174,9 +207,12 @@ async function start() {
 
 
 
+
 function gerarFaceMatcher(){
-    faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5)
+    faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, config.distanceThreshold)
+    console.log(`> FaceMatcher atualizado com ${config.distanceThreshold} de Threshold <`)
 }
+
 
 
 
