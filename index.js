@@ -22,6 +22,7 @@ app.use(express.urlencoded({ limit: '50mb' }));
 //Controllers
 const cadastro = require('./controllers/cadastro');
 const validacao = require('./controllers/validacao');
+const remocao = require('./controllers/remocao');
 const getDadosUser = require('./controllers/getDadosUser');
 
 //
@@ -177,6 +178,18 @@ app.post('/remover', (req, res) => {
     console.log('\n> Requisição de remoção recebida')
     console.log('------------------------------------')
 
+    remocao(req, res, req.body.codigo, labeledFaceDescriptors)
+    .then((newLabeledFaceDescriptors) => {
+        labeledFaceDescriptors = newLabeledFaceDescriptors
+
+        gerarFaceMatcher()
+
+        saveLabeledFaces()
+    })
+    .catch((err)=>{
+        console.log('> Erro na remoção <')
+        console.log(err)
+    })
     
 })
 
