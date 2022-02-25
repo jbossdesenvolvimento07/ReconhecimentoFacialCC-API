@@ -9,11 +9,15 @@ var config = {
     requestTimeout: Number(process.env.REQUEST_TIMEOUT),
     options: {
         encrypt: false,
-        enableArithAbort: true
+        enableArithAbort: true,
+        cryptoCredentialsDetails: {
+            minVersion: 'TLSv1'
+        },
+        trustServerCertificate: true
     }
 };
 
-module.exports = async (req, res, cpf) => {
+module.exports = async (req, res, filtro) => {
     res.set({
         "Content-Type": "application/json",
         "Access-Control-Allow-Credentials": "true",
@@ -23,14 +27,12 @@ module.exports = async (req, res, cpf) => {
     try{
 
         await sql.connect(config)
-        let qry = ` SELECT a.*, rf.status statusRF FROM associados a
-                    LEFT JOIN dbo.ReconhecimentoFacial rf ON a.CODIGO = rf.codigoAssociado 
-                    WHERE dbo.ExtractInteger(a.cpf) = '${cpf}'`
+        let qry = ` SELECT a.*, rf.status statusRF FROM ASSOCIADOS a 
+                    LEFT JOIN dbo.ReconhecimentoFacial rf ON a.CODIGO = rf.codigoAssociado  ` + filtro
+        console.log(qry)
         let result = await sql.query(qry)
 
-        console.log(result.recordset[0])
-
-        res.send(result.recordset[0])
+        res.send(result.recordset)
 
     }catch(err){
 

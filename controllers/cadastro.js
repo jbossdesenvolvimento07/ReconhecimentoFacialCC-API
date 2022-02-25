@@ -9,17 +9,17 @@ const sql = require('mssql')
 async function cadastrarNoBanco(dados){
     try{
         var config = {
-            user: 'jboss.consulta.06',
-            password: 'consulta06@jboss',
-            server: 'ccclube.no-ip.biz',
-            port: 1433,
-            database: 'CCONLINE_OLD',
-            requestTimeout: 60000,
+            user: process.env.USER,
+            password: process.env.PASSWORD,
+            server: process.env.SERVER,
+            port: Number(process.env.PORT),
+            database: process.env.DATABASE,
+            requestTimeout: Number(process.env.REQUEST_TIMEOUT),
             options: {
                 encrypt: false,
                 enableArithAbort: true
             }
-        };
+        };        
     
         //Status: A = Ativo
         await sql.connect(config)

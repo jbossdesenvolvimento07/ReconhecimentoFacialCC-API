@@ -1,4 +1,5 @@
 
+require('dotenv').config()
 const tf = require('@tensorflow/tfjs-node');
 const express = require('express');
 const cors = require('cors');
@@ -7,6 +8,7 @@ const fs = require('fs')
 const canvas = require('canvas')
 //const faceapi = require('face-api.js');
 const faceapi = require('@vladmandic/face-api');
+
 
 //
 //Configurações do FaceApi
@@ -24,6 +26,7 @@ const cadastro = require('./controllers/cadastro');
 const validacao = require('./controllers/validacao');
 const remocao = require('./controllers/remocao');
 const getDadosUser = require('./controllers/getDadosUser');
+const getAssociados = require('./controllers/getAssociados');
 
 //
 //Configs
@@ -128,6 +131,17 @@ app.post('/getDadosUser', (req, res) => {
     console.log('----------------------------------')
 
     getDadosUser(req, res, req.body.cpf)
+})
+
+// ------
+app.post('/getAssociados', (req, res) => {
+
+    console.log('\n> Requisição de dados recebida')
+    console.log('----------------------------------')
+
+    const filtro = req.body.filtro
+
+    getAssociados(req, res, filtro)
 })
 
 //Adiciona Uma pessoa
