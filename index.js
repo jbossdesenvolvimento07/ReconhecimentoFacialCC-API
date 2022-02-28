@@ -287,6 +287,8 @@ function loadLabeledFaces(){
             console.log(`Face carregada... (${teste[i].label})`)
         }
 
+        console.log(teste.length + ' Faces carregadas')
+
         gerarFaceMatcher()
 
         console.log('> Carregamento concluído <')
