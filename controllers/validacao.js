@@ -69,14 +69,16 @@ module.exports = async (req, res, dados, faceMatcher) => {
                 if(results[i]._label === 'unknown'){
                     associados.push({
                         'foto': '',
-                        'dados': 'unknown'
+                        'dados': 'unknown',
+                        'detectionData': detections[i]
                     })
                 }
                 else{
                     
                     associados.push({
                         'foto': fs.readFileSync(`D:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
-                        'dados': await getDadosSocio(results[i]._label)
+                        'dados': await getDadosSocio(results[i]._label),
+                        'detectionData': detections[i]
                     })
                     
 
