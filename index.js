@@ -289,7 +289,8 @@ function loadLabeledFaces(){
 
         console.log(teste.length + ' Faces carregadas')
 
-        gerarFaceMatcher()
+        if(teste.length > 0)
+            gerarFaceMatcher()
 
         console.log('> Carregamento concluído <')
     });

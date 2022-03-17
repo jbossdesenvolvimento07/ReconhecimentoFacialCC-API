@@ -28,6 +28,7 @@ module.exports = async (req, res, cpf) => {
                     WHERE dbo.ExtractInteger(a.cpf) = '${cpf}'`
         let result = await sql.query(qry)
 
+        console.log(qry)
         console.log(result.recordset[0])
 
         res.send(result.recordset[0])
