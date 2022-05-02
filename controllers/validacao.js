@@ -7,18 +7,19 @@ const sql = require('mssql');
 
 async function getDadosSocio(codigo){
 
-    var config = {
-        user: 'jboss.consulta.06',
-        password: 'consulta06@jboss',
-        server: 'ccclube.no-ip.biz',
-        port: 1433,
-        database: 'CCONLINE_OLD',
-        requestTimeout: 60000,
-        options: {
-            encrypt: false,
-            enableArithAbort: true
-        }
-    };
+    
+	var config = {
+		user: process.env.USER,
+		password: process.env.PASSWORD,
+		server: process.env.SERVER,
+		port: Number(process.env.PORT),
+		database: process.env.DATABASE,
+		requestTimeout: Number(process.env.REQUEST_TIMEOUT),
+		options: {
+			encrypt: false,
+			enableArithAbort: true
+		}
+	};  
 
     try{
 
@@ -76,7 +77,7 @@ module.exports = async (req, res, dados, faceMatcher) => {
                 else{
                     
                     associados.push({
-                        'foto': fs.readFileSync(`D:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
+                        'foto': fs.readFileSync(`C:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
                         'dados': await getDadosSocio(results[i]._label),
                         'detectionData': detections[i]
                     })
@@ -126,7 +127,7 @@ module.exports = async (req, res, dados, faceMatcher) => {
                     dadosSocio.push({"CODIGO": "unknown"})
                 }
                 else{
-                    images.push(fs.readFileSync(`D:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'))
+                    images.push(fs.readFileSync(`C:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'))
                     dadosSocio.push(await getDadosSocio(results[i]._label))
 
                 }

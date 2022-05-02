@@ -250,7 +250,7 @@ function gerarFaceMatcher(){
 
 async function saveLabeledFaces(){
     const data = JSON.stringify(labeledFaceDescriptors);
-    fs.writeFile('D:/ReconhecimentoFacialCC-API/labeledFaces.json', data, (err) => {
+    fs.writeFile('C:/ReconhecimentoFacialCC-API/labeledFaces.json', data, (err) => {
         if (err) {
             throw err;
         }
@@ -259,7 +259,7 @@ async function saveLabeledFaces(){
 }
 
 function loadLabeledFaces(){
-    fs.readFile('D:/ReconhecimentoFacialCC-API/labeledFaces.json', 'utf-8', (err, data) => {
+    fs.readFile('C:/ReconhecimentoFacialCC-API/labeledFaces.json', 'utf-8', (err, data) => {
         if (err) {
             throw err;
         }
