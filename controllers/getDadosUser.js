@@ -14,11 +14,6 @@ var config = {
 };
 
 module.exports = async (req, res, cpf) => {
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
 
     try{
 
@@ -31,7 +26,7 @@ module.exports = async (req, res, cpf) => {
         console.log(qry)
         console.log(result.recordset[0])
 
-        res.send(result.recordset[0])
+        return result.recordset[0]
 
     }catch(err){
 

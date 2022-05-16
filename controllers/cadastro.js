@@ -33,12 +33,12 @@ async function cadastrarNoBanco(dados){
 }
 
 function salvarFotos(dados){
-    if (!fs.existsSync(`./fotos/${dados[0]}`)){
-        fs.mkdirSync(`./fotos/${dados[0]}`);
+    if (!fs.existsSync(`../ReconhecimentoFacialCC-API-Fotos/${dados[0]}`)){
+        fs.mkdirSync(`../ReconhecimentoFacialCC-API-Fotos/${dados[0]}`);
     }
 
     for (let i = 0; i < dados[1].length; i++) {
-        fs.writeFile(`./fotos/${dados[0]}/imagem${i}.txt`, dados[1][i], (err) => {
+        fs.writeFile(`../ReconhecimentoFacialCC-API-Fotos/${dados[0]}/imagem${i}.txt`, dados[1][i], (err) => {
             if(err) {
                 return console.log(err);
             }
@@ -49,13 +49,6 @@ function salvarFotos(dados){
 
 
 module.exports = async (req, res, dados) => {
-
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
-
 
     const label = dados[0];
     const dataUrls = dados[1];
@@ -75,11 +68,8 @@ module.exports = async (req, res, dados) => {
             descriptions.push(detections.descriptor)
             
         }
-        
 
         const newPerson = new faceapi.LabeledFaceDescriptors(label, descriptions)
-
-        res.send([dataUrls , {"Status": "Cadastrado"}])
 
         salvarFotos(dados)
 
@@ -88,8 +78,6 @@ module.exports = async (req, res, dados) => {
         return newPerson
 
     }catch(err) {
-
-        res.send([dataUrls , {"Status": "Falha"}])
 
         throw(err)
     }

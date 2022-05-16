@@ -7,18 +7,19 @@ const sql = require('mssql');
 
 async function getDadosSocio(codigo){
 
-    var config = {
-        user: 'jboss.consulta.06',
-        password: 'consulta06@jboss',
-        server: 'ccclube.no-ip.biz',
-        port: 1433,
-        database: 'CCONLINE_OLD',
-        requestTimeout: 60000,
-        options: {
-            encrypt: false,
-            enableArithAbort: true
-        }
-    };
+    
+	var config = {
+		user: process.env.USER,
+		password: process.env.PASSWORD,
+		server: process.env.SERVER,
+		port: Number(process.env.PORT),
+		database: process.env.DATABASE,
+		requestTimeout: Number(process.env.REQUEST_TIMEOUT),
+		options: {
+			encrypt: false,
+			enableArithAbort: true
+		}
+	};  
 
     try{
 
@@ -42,23 +43,12 @@ module.exports = async (req, res, dados, faceMatcher) => {
     let image = new Image()
     image.src = dados[0];
 
-    console.log('Imagem convertida... ')
-
-
     try{
 
         const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
-        console.log('Face detectada...')
         const results = await detections.map( (d) => faceMatcher.findBestMatch(d.descriptor))
         console.log('> Reconhecimento <')
         console.log(results)
-
-        res.set({
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": "true",
-            "Access-Control-Allow-Origin": "*",
-        });
-    
 
         const associados = []
 
@@ -76,7 +66,7 @@ module.exports = async (req, res, dados, faceMatcher) => {
                 else{
                     
                     associados.push({
-                        'foto': fs.readFileSync(`D:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
+                        'foto': fs.readFileSync(`../ReconhecimentoFacialCC-API-Fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
                         'dados': await getDadosSocio(results[i]._label),
                         'detectionData': detections[i]
                     })
@@ -88,7 +78,7 @@ module.exports = async (req, res, dados, faceMatcher) => {
 
         }
 
-        res.send(associados)
+        return associados
 
 
 
@@ -126,7 +116,7 @@ module.exports = async (req, res, dados, faceMatcher) => {
                     dadosSocio.push({"CODIGO": "unknown"})
                 }
                 else{
-                    images.push(fs.readFileSync(`D:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'))
+                    images.push(fs.readFileSync(`C:/ReconhecimentoFacialCC-API/fotos/${results[i]._label}/imagem0.txt`, 'utf-8'))
                     dadosSocio.push(await getDadosSocio(results[i]._label))
 
                 }

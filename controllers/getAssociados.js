@@ -17,13 +17,8 @@ var config = {
     }
 };
 
-module.exports = async (req, res, filtro) => {
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
-
+module.exports = async (filtro) => {
+    
     try{
 
         await sql.connect(config)
@@ -32,7 +27,7 @@ module.exports = async (req, res, filtro) => {
         console.log(qry)
         let result = await sql.query(qry)
 
-        res.send(result.recordset)
+        return result.recordset
 
     }catch(err){
 

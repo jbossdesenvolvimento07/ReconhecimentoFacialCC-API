@@ -32,26 +32,15 @@ async function atualizarNoBanco(codigo){
 
 module.exports = async (req, res, codigo, labeledFaceDescriptors) => {
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
-
-
     try{
         console.log(codigo)
         labeledFaceDescriptors = labeledFaceDescriptors.filter(person => person.label !== codigo);
         
         await atualizarNoBanco(codigo)
 
-        res.send({"Status": "Removido"})
-
         return labeledFaceDescriptors
 
     }catch(err) {
-
-        res.send({"Status": "Falha"})
 
         throw(err)
     }
