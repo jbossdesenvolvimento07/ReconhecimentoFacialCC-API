@@ -27,6 +27,7 @@ const validacao = require('./controllers/validacao');
 const remocao = require('./controllers/remocao');
 const getDadosUser = require('./controllers/getDadosUser');
 const getAssociados = require('./controllers/getAssociados');
+const getDadosReconhecimento = require('./controllers/getDadosReconhecimento');
 
 //
 //Configs
@@ -141,7 +142,31 @@ app.post('/getDadosUser', (req, res) => {
     console.log('\n> Requisição de dados recebida')
     console.log('----------------------------------')
 
-    getDadosUser(req, res, req.body.cpf)
+    getDadosUser(req.body.cpf)
+        .then((dados) => {
+            res.send(dados)
+        })
+        .catch((err) => {
+            console.log("> Erro na consulta de dados <")
+            console.log(err)
+
+            res.send({"Status": "Falha"})
+        })
+})
+
+
+app.post('/getDadosReconhecimento', (req, res) => {
+
+    res.set({
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "*",
+    });
+
+    console.log('\n> Requisição de dados reconhecimento recebida')
+    console.log('----------------------------------')
+
+    getDadosReconhecimento()
         .then((dados) => {
             res.send(dados)
         })
