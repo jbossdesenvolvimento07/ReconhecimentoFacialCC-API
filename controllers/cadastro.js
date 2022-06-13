@@ -48,7 +48,7 @@ function salvarFotos(dados){
 }
 
 
-module.exports = async (req, res, dados) => {
+module.exports = async (dados) => {
 
     const label = dados[0];
     const dataUrls = dados[1];

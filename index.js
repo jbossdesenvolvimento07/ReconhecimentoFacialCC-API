@@ -27,6 +27,7 @@ const validacao = require('./controllers/validacao');
 const remocao = require('./controllers/remocao');
 const getDadosUser = require('./controllers/getDadosUser');
 const getAssociados = require('./controllers/getAssociados');
+const { ssdMobilenetv1 } = require('face-api.js');
 
 //
 //Configs
@@ -190,7 +191,7 @@ app.post('/cadastrar', (req, res) => {
 
     const dados = [req.body.label, req.body.dataUrls]
 
-    cadastro(req, res, dados)
+    cadastro(dados)
         .then((newPerson) => {
             labeledFaceDescriptors.push(newPerson)
             console.log('> Cadastro efetuado <')
@@ -226,7 +227,7 @@ app.post('/validar', (req, res) => {
 
     const dados = [dataUrl]
 
-    validacao(req, res, dados, faceMatcher)
+    validacao(dados, faceMatcher)
         .then((result) => {
             res.send(result)
         })
@@ -249,7 +250,7 @@ app.post('/remover', (req, res) => {
     console.log('\n> Requisição de remoção recebida')
     console.log('------------------------------------')
 
-    remocao(req, res, req.body.codigo, labeledFaceDescriptors)
+    remocao(req.body.codigo, labeledFaceDescriptors)
         .then((newLabeledFaceDescriptors) => {
             labeledFaceDescriptors = newLabeledFaceDescriptors
 

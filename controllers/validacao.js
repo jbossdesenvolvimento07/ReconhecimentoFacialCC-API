@@ -37,8 +37,7 @@ async function getDadosSocio(codigo){
 }
 
 
-
-module.exports = async (req, res, dados, faceMatcher) => {
+module.exports = async (dados, faceMatcher) => {
     
     let image = new Image()
     image.src = dados[0];

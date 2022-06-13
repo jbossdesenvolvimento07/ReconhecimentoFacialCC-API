@@ -30,7 +30,7 @@ async function atualizarNoBanco(codigo){
 
 }
 
-module.exports = async (req, res, codigo, labeledFaceDescriptors) => {
+module.exports = async (codigo, labeledFaceDescriptors) => {
 
     try{
         console.log(codigo)
