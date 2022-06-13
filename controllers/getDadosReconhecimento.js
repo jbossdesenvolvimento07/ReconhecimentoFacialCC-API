@@ -13,14 +13,14 @@ var config = {
     }
 };
 
-module.exports = async (cpf) => {
+module.exports = async () => {
 
     try{
 
         await sql.connect(config)
-        let qry = ` SELECT a.*, rf.status statusRF FROM associados a
-                    LEFT JOIN dbo.ReconhecimentoFacial rf ON a.CODIGO = rf.codigoAssociado 
-                    WHERE dbo.ExtractInteger(a.cpf) = '${cpf}'`
+        let qry = ` SELECT
+                        (SELECT COUNT(id) FROM dbo.ASSOCIADOS WHERE DESLIGAMENTO IS NULL) ASSOCIADOS,
+                        (SELECT COUNT(id) FROM dbo.ReconhecimentoFacial WHERE status = 'A') RECONHECIMENTO`
         let result = await sql.query(qry)
 
         console.log(qry)
