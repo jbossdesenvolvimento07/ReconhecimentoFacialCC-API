@@ -255,11 +255,6 @@ app.post('/validar', (req, res) => {
         .then((result) => {
             res.send(result)
         })
-        .catch((err) => {
-            console.log('> Erro na validação <')
-            console.log(err)
-        })
-    //detectFace(dataUrl, res);
 })
 
 //Remove uma pessoa
@@ -296,7 +291,7 @@ app.post('/remover', (req, res) => {
 
 
 //Configura o listener e carrega redes neurais
-const port = 6061;
+const port = process.env.APPPORT;
 app.listen(port, () => {
     console.log('Listening on port ' + port)
 
@@ -314,12 +309,11 @@ function start() {
 
     carregaConfig();
 
-    //loadLabeledFaces(); //Carrega faces salvas no json
-
-    loadLabeledFacesFromLocalDir(); //Carrega faces pelas fotos salvas
-
-
-
+    if(process.env.LOADMODE == 'dir'){
+        loadLabeledFacesFromLocalDir(); //Carrega faces pelas fotos salvas
+    }else{
+        loadLabeledFaces(); //Carrega faces salvas no json
+    }
 }
 
 
