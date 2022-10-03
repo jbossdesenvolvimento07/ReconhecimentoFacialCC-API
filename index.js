@@ -310,9 +310,9 @@ function start() {
     carregaConfig();
 
     if(process.env.LOADMODE == 'dir'){
-        loadLabeledFacesFromLocalDir(); //Carrega faces pelas fotos salvas
+        loadLabeledFacesFromLocalDir() //Carrega faces pelas fotos salvas
     }else{
-        loadLabeledFaces(); //Carrega faces salvas no json
+        loadLabeledFaces()//Carrega faces salvas no json
     }
 }
 
@@ -416,9 +416,8 @@ async function loadLabeledFacesFromLocalDir() {
     console.log('> Carregamento concluído <')
     console.log(fotosCarregadas + ' fotos carregadas')
 
+    saveLabeledFaces()
+
     gerarFaceMatcher()
 
 }
-
-
-
