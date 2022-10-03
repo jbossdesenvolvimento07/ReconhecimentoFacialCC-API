@@ -32,25 +32,25 @@ const getDadosReconhecimento = require('./controllers/getDadosReconhecimento');
 //
 //Configs
 let config = {
-    'distanceThreshold': 0.47
+  'distanceThreshold': 0.47
 }
 function carregaConfig() {
-    const data = fs.readFileSync(`./config.json`, 'utf-8')
+  const data = fs.readFileSync(`./config.json`, 'utf-8')
 
-    config = JSON.parse(data.toString());
-    console.log("> Configs carregadas <")
-    console.log(config)
+  config = JSON.parse(data.toString());
+  console.log("> Configs carregadas <")
+  console.log(config)
 
 }
 function salvaConfig() {
-    const data = JSON.stringify(config);
-    fs.writeFile('./config.json', data, (err) => {
-        if (err) {
-            throw err;
-        }
-        console.log("> Configs salvas em JSON <");
-        console.log(config)
-    });
+  const data = JSON.stringify(config);
+  fs.writeFile('./config.json', data, (err) => {
+    if (err) {
+      throw err;
+    }
+    console.log("> Configs salvas em JSON <");
+    console.log(config)
+  });
 }
 
 
@@ -65,67 +65,67 @@ var labeledFaceDescriptors = [];
 
 //Retorna os usuários cadastrados
 app.get('/', (req, res) => {
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*"
-    });
-    res.send(labeledFaceDescriptors)
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*"
+  });
+  res.send(labeledFaceDescriptors)
 })
 
 //Salva usuários carregados em json
 app.get('/salvar', (req, res) => {
 
-    saveLabeledFaces()
+  saveLabeledFaces()
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*"
-    });
-    res.send(labeledFaceDescriptors)
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*"
+  });
+  res.send(labeledFaceDescriptors)
 })
 
 //Carrega faces salvas em json
 app.get('/carregar', (req, res) => {
 
-    loadLabeledFaces()
+  loadLabeledFaces()
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*"
-    });
-    res.send(labeledFaceDescriptors)
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*"
+  });
+  res.send(labeledFaceDescriptors)
 })
 
 //Seta a configuração
 app.post('/setConfig', (req, res) => {
 
-    config = req.body
+  config = req.body
 
-    salvaConfig()
+  salvaConfig()
 
-    gerarFaceMatcher()
+  gerarFaceMatcher()
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*"
-    });
-    res.send(config)
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*"
+  });
+  res.send(config)
 
 })
 
 //retorna a configuração atual
 app.get('/getConfig', (req, res) => {
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*"
-    });
-    res.send(config)
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*"
+  });
+  res.send(config)
 
 })
 
@@ -133,159 +133,164 @@ app.get('/getConfig', (req, res) => {
 //Retorna os dados do usuário de acordo com o cpf
 app.post('/getDadosUser', (req, res) => {
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*",
+  });
 
-    console.log('\n> Requisição de dados recebida')
-    console.log('----------------------------------')
+  console.log('\n> Requisição de dados recebida')
+  console.log('----------------------------------')
 
-    getDadosUser(req.body.cpf)
-        .then((dados) => {
-            res.send(dados)
-        })
-        .catch((err) => {
-            console.log("> Erro na consulta de dados <")
-            console.log(err)
+  getDadosUser(req.body.cpf)
+    .then((dados) => {
+      res.send(dados)
+    })
+    .catch((err) => {
+      console.log("> Erro na consulta de dados <")
+      console.log(err)
 
-            res.send({"Status": "Falha"})
-        })
+      res.send({ "Status": "Falha" })
+    })
 })
 
 
 app.post('/getDadosReconhecimento', (req, res) => {
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*",
+  });
 
-    console.log('\n> Requisição de dados reconhecimento recebida')
-    console.log('----------------------------------')
+  console.log('\n> Requisição de dados reconhecimento recebida')
+  console.log('----------------------------------')
 
-    getDadosReconhecimento()
-        .then((dados) => {
-            res.send(dados)
-        })
-        .catch((err) => {
-            console.log("> Erro na consulta de dados <")
-            console.log(err)
+  getDadosReconhecimento()
+    .then((dados) => {
+      res.send(dados)
+    })
+    .catch((err) => {
+      console.log("> Erro na consulta de dados <")
+      console.log(err)
 
-            res.send({"Status": "Falha"})
-        })
+      res.send({ "Status": "Falha" })
+    })
 })
 
 // ------
 app.post('/getAssociados', (req, res) => {
 
-    console.log('\n> Requisição de dados recebida')
-    console.log('----------------------------------')
+  console.log('\n> Requisição de dados recebida')
+  console.log('----------------------------------')
 
-    const filtro = req.body.filtro
+  const filtro = req.body.filtro
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*",
+  });
 
-    getAssociados(filtro)
-        .then(associados => {
-            res.send(associados)
-        })
-        .catch(err => {
-            console.log(err)
-        })
+  getAssociados(filtro)
+    .then(associados => {
+      res.send(associados)
+    })
+    .catch(err => {
+      console.log(err)
+    })
 })
 
 //Adiciona Uma pessoa
 app.post('/cadastrar', (req, res) => {
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
-    
-    console.log('\n> Requisição de cadastro recebida')
-    console.log('----------------------------------')
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*",
+  });
 
-    const dados = [req.body.label, req.body.dataUrls]
+  console.log('\n> Requisição de cadastro recebida')
+  console.log('----------------------------------')
 
-    cadastro(dados)
-        .then((newPerson) => {
-            labeledFaceDescriptors.push(newPerson)
-            console.log('> Cadastro efetuado <')
+  const dados = [req.body.label, req.body.dataUrls]
 
-            gerarFaceMatcher()
+  cadastro(dados)
+    .then((newPerson) => {
+      labeledFaceDescriptors.push(newPerson)
+      console.log('> Cadastro efetuado <')
 
-            saveLabeledFaces()
+      gerarFaceMatcher()
 
-            res.send([dados[1] , {"Status": "Cadastrado"}])
-        })
-        .catch((err) => {
-            console.log('> Erro no cadastro <')
-            console.log(err)
+      saveLabeledFaces()
 
-            res.send([dados[1] , {"Status": "Falha"}])
-        })
+      res.send([dados[1], { "Status": "Cadastrado" }])
+    })
+    .catch((err) => {
+      console.log('> Erro no cadastro <')
+      console.log(err)
+
+      res.send([dados[1], { "Status": "Falha" }])
+    })
 
 })
 
 //Valida uma foto
 app.post('/validar', (req, res) => {
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*",
+  });
 
-    console.log('\n> Requisição de validação recebida')
-    console.log('------------------------------------')
+  console.log('\n> Requisição de validação recebida')
+  console.log('------------------------------------')
 
-    const dataUrl = req.body.dataUrl;
+  const dataUrl = req.body.dataUrl;
 
-    const dados = [dataUrl]
+  const dados = [dataUrl]
 
-    validacao(dados, faceMatcher)
-        .then((result) => {
-            res.send(result)
-        })
+  validacao(dados, faceMatcher)
+    .then((result) => {
+      res.send(result)
+    })
+    .catch((err) => {
+      console.log('> Erro na validação <')
+      console.log(err)
+      res.send([])
+    })
 })
 
 //Remove uma pessoa
 app.post('/remover', (req, res) => {
 
-    res.set({
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-    });
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*",
+  });
 
-    console.log('\n> Requisição de remoção recebida')
-    console.log('------------------------------------')
+  console.log('\n> Requisição de remoção recebida')
+  console.log('------------------------------------')
 
-    remocao(req.body.codigo, labeledFaceDescriptors)
-        .then((newLabeledFaceDescriptors) => {
-            labeledFaceDescriptors = newLabeledFaceDescriptors
+  remocao(req.body.codigo, labeledFaceDescriptors)
+    .then((newLabeledFaceDescriptors) => {
+      labeledFaceDescriptors = newLabeledFaceDescriptors
 
-            gerarFaceMatcher()
+      gerarFaceMatcher()
 
-            saveLabeledFaces()
+      saveLabeledFaces()
 
-            res.send({"Status": "Removido"})
+      res.send({ "Status": "Removido" })
 
-        })
-        .catch((err) => {
-            console.log('> Erro na remoção <')
-            console.log(err)
+    })
+    .catch((err) => {
+      console.log('> Erro na remoção <')
+      console.log(err)
 
-            res.send({"Status": "Falha"})
-        })
+      res.send({ "Status": "Falha" })
+    })
 
 })
 
@@ -293,35 +298,35 @@ app.post('/remover', (req, res) => {
 //Configura o listener e carrega redes neurais
 const port = process.env.APPPORT;
 app.listen(port, () => {
-    console.log('Listening on port ' + port)
+  console.log('Listening on port ' + port)
 
 
-    console.log('Carregando Redes Neurais...')
-    Promise.all([
-        faceapi.nets.ssdMobilenetv1.loadFromDisk('./models'),
-        faceapi.nets.faceLandmark68Net.loadFromDisk('./models'),
-        faceapi.nets.ssdMobilenetv1.loadFromDisk('./models'),
-        faceapi.nets.faceRecognitionNet.loadFromDisk('./models'),
-    ]).then(start)
+  console.log('Carregando Redes Neurais...')
+  Promise.all([
+    faceapi.nets.ssdMobilenetv1.loadFromDisk('./models'),
+    faceapi.nets.faceLandmark68Net.loadFromDisk('./models'),
+    faceapi.nets.ssdMobilenetv1.loadFromDisk('./models'),
+    faceapi.nets.faceRecognitionNet.loadFromDisk('./models'),
+  ]).then(start)
 })
 
 function start() {
 
-    carregaConfig();
+  carregaConfig();
 
-    if(process.env.LOADMODE == 'dir'){
-        loadLabeledFacesFromLocalDir() //Carrega faces pelas fotos salvas
-    }else{
-        loadLabeledFaces()//Carrega faces salvas no json
-    }
+  if (process.env.LOADMODE == 'dir') {
+    loadLabeledFacesFromLocalDir() //Carrega faces pelas fotos salvas
+  } else {
+    loadLabeledFaces()//Carrega faces salvas no json
+  }
 }
 
 
 
 
 function gerarFaceMatcher() {
-    faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, config.distanceThreshold)
-    console.log(`> FaceMatcher atualizado com ${config.distanceThreshold} de Threshold <`)
+  faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, config.distanceThreshold)
+  console.log(`> FaceMatcher atualizado com ${config.distanceThreshold} de Threshold <`)
 }
 
 
@@ -333,91 +338,91 @@ function gerarFaceMatcher() {
 
 
 async function saveLabeledFaces() {
-    const data = JSON.stringify(labeledFaceDescriptors);
-    fs.writeFile('./labeledFaces.json', data, (err) => {
-        if (err) {
-            throw err;
-        }
-        console.log("> LabeledFaces salvas em JSON <");
-    });
+  const data = JSON.stringify(labeledFaceDescriptors);
+  fs.writeFile('./labeledFaces.json', data, (err) => {
+    if (err) {
+      throw err;
+    }
+    console.log("> LabeledFaces salvas em JSON <");
+  });
 }
 
 function loadLabeledFaces() {
 
 
-    fs.readFile('./labeledFaces.json', 'utf-8', (err, data) => {
-        if (err) {
-            throw err;
-        }
+  fs.readFile('./labeledFaces.json', 'utf-8', (err, data) => {
+    if (err) {
+      throw err;
+    }
 
-        const labeledFacesJSON = JSON.parse(data.toString());
+    const labeledFacesJSON = JSON.parse(data.toString());
 
 
-        for (let i = 0; i < labeledFacesJSON.length; i++) {
-            const descriptions = []
+    for (let i = 0; i < labeledFacesJSON.length; i++) {
+      const descriptions = []
 
-            //Carrega as imagens já convertidas do json
-            descriptions.push(new Float32Array(labeledFacesJSON[i].descriptors[0]));
-            //descriptions.push(new Float32Array(labeledFacesJSON[i].descriptors[1]));
-            //descriptions.push(new Float32Array(labeledFacesJSON[i].descriptors[2]));
+      //Carrega as imagens já convertidas do json
+      descriptions.push(new Float32Array(labeledFacesJSON[i].descriptors[0]));
+      //descriptions.push(new Float32Array(labeledFacesJSON[i].descriptors[1]));
+      //descriptions.push(new Float32Array(labeledFacesJSON[i].descriptors[2]));
 
-            //Cadastra como uma pessoa
-            const newPerson = new faceapi.LabeledFaceDescriptors(labeledFacesJSON[i].label, descriptions)
-            labeledFaceDescriptors.push(newPerson)
+      //Cadastra como uma pessoa
+      const newPerson = new faceapi.LabeledFaceDescriptors(labeledFacesJSON[i].label, descriptions)
+      labeledFaceDescriptors.push(newPerson)
 
-            console.log(`Face carregada... (${labeledFacesJSON[i].label})`)
-        }
+      console.log(`Face carregada... (${labeledFacesJSON[i].label})`)
+    }
 
-        console.log(labeledFacesJSON.length + ' Faces carregadas')
+    console.log(labeledFacesJSON.length + ' Faces carregadas')
 
-        if (labeledFacesJSON.length > 0)
-            gerarFaceMatcher()
+    if (labeledFacesJSON.length > 0)
+      gerarFaceMatcher()
 
-        console.log('> Carregamento concluído <')
-    });
+    console.log('> Carregamento concluído <')
+  });
 }
 
 async function loadLabeledFacesFromLocalDir() {
 
-    labeledFaceDescriptors = []
+  labeledFaceDescriptors = []
 
-    const labels = []
-    let fotosCarregadas = 0
+  const labels = []
+  let fotosCarregadas = 0
 
-    const associadosRF = await getAssociados(" WHERE rf.status = 'A' ")
-    console.log(associadosRF)
-    for (let i = 0; i < associadosRF.length; i++) {
-        labels.push(associadosRF[i].CODIGO)
-    }
-    console.log(labels)
-
-
-    for (let i = 0; i < labels.length; i++) {
-        const descriptions = [];
+  const associadosRF = await getAssociados(" WHERE rf.status = 'A' ")
+  console.log(associadosRF)
+  for (let i = 0; i < associadosRF.length; i++) {
+    labels.push(associadosRF[i].CODIGO)
+  }
+  console.log(labels)
 
 
-        const imgBase64 = fs.readFileSync(`../ReconhecimentoFacialCC-API-Fotos/${labels[i]}/imagem0.txt`, 'utf8');
-        fotosCarregadas++
+  for (let i = 0; i < labels.length; i++) {
+    const descriptions = [];
 
-        let image = new Image()
-        image.src = imgBase64;
 
-        detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
-        descriptions.push(detections.descriptor)
+    const imgBase64 = fs.readFileSync(`../ReconhecimentoFacialCC-API-Fotos/${labels[i]}/imagem0.txt`, 'utf8');
+    fotosCarregadas++
 
-        const newPerson = new faceapi.LabeledFaceDescriptors(labels[i], descriptions)
+    let image = new Image()
+    image.src = imgBase64;
 
-        labeledFaceDescriptors.push(newPerson)
+    detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
+    descriptions.push(detections.descriptor)
 
-        console.log(`Face carregada... (${labels[i]})`)
+    const newPerson = new faceapi.LabeledFaceDescriptors(labels[i], descriptions)
 
-    }
+    labeledFaceDescriptors.push(newPerson)
 
-    console.log('> Carregamento concluído <')
-    console.log(fotosCarregadas + ' fotos carregadas')
+    console.log(`Face carregada... (${labels[i]})`)
 
-    saveLabeledFaces()
+  }
 
-    gerarFaceMatcher()
+  console.log('> Carregamento concluído <')
+  console.log(fotosCarregadas + ' fotos carregadas')
+
+  saveLabeledFaces()
+
+  gerarFaceMatcher()
 
 }
