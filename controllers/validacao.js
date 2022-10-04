@@ -38,10 +38,10 @@ async function getDadosSocio(codigo) {
 
 module.exports = async (dados, faceMatcher) => {
 
-  let image = new Image()
-  image.src = dados[0];
-
   try {
+
+    let image = new Image()
+    image.src = dados[0];
 
     const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
     const results = await detections.map((d) => faceMatcher.findBestMatch(d.descriptor))
@@ -78,11 +78,8 @@ module.exports = async (dados, faceMatcher) => {
 
     return associados
 
-
-
   } catch (err) {
-    throw (err)
-
+    console.log(err)
   }
 
 }
