@@ -36,7 +36,7 @@ async function getDadosSocio(codigo) {
             INNER JOIN dbo.EventoSubTiposIngresso st ON ee.idSubTipoIngresso = st.id 
             INNER JOIN dbo.EventoTiposIngresso t ON st.idTipo  = t.id 
             WHERE ee.codigoAssociado = '${codigo}' AND ee.status = 'S' AND 
-              MONTH(ee.data) = MONTH(GETDATE()) AND YEAR(ee.data) = YEAR(GETDATE()) AND DAY(ee.data) = DAY(GETDATE())`
+              MONTH(ew.dataEvento) = MONTH(GETDATE()) AND YEAR(ew.dataEvento) = YEAR(GETDATE()) AND DAY(ew.dataEvento) = DAY(GETDATE())`
     let result2 = await sql.query(qry)
 
     return { 
