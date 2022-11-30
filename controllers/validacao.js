@@ -54,51 +54,50 @@ async function getDadosSocio(codigo) {
 
 module.exports = async (dados, faceMatcher) => {
 
+  let image = new Image()
+  image.src = dados[0];
+  
   try {
-
-    let image = new Image()
-    image.src = dados[0];
-
     const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
     const results = await detections.map((d) => faceMatcher.findBestMatch(d.descriptor))
     console.log('> Reconhecimento <')
     console.log(results)
 
-    const associados = []
+  } catch (err) {
+    throw (err)
+  }
 
-    if (results.length > 0) {
+  const associados = []
 
-      for (let i = 0; i < results.length; i++) {
+  if (results.length > 0) {
 
-        if (results[i]._label === 'unknown') {
-          associados.push({
-            'foto': '',
-            'dados': 'unknown',
-            'ingressos': null
-            // 'detectionData': detections[i]
-          })
-        }
-        else {
-          let dados = await getDadosSocio(results[i]._label)
+    for (let i = 0; i < results.length; i++) {
 
-          associados.push({
-            'foto': fs.readFileSync(`../ReconhecimentoFacialCC-API-Fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
-            'dados': dados.dadosSocio,
-            'ingressos': dados.dadosIngressos
-            // 'detectionData': detections[i]
-          })
+      if (results[i]._label === 'unknown') {
+        associados.push({
+          'foto': '',
+          'dados': 'unknown',
+          'ingressos': null
+          // 'detectionData': detections[i]
+        })
+      }
+      else {
+        let dados = await getDadosSocio(results[i]._label)
 
+        associados.push({
+          'foto': fs.readFileSync(`../ReconhecimentoFacialCC-API-Fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
+          'dados': dados.dadosSocio,
+          'ingressos': dados.dadosIngressos
+          // 'detectionData': detections[i]
+        })
 
-        }
 
       }
 
     }
 
-    return associados
-
-  } catch (err) {
-    throw (err)
   }
+
+  return associados
 
 }
