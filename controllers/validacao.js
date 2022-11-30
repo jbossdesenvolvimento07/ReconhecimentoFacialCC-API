@@ -26,7 +26,23 @@ async function getDadosSocio(codigo) {
     let qry = `SELECT * FROM associados WHERE CODIGO = '${codigo}' AND DESLIGAMENTO IS NULL`
     let result = await sql.query(qry)
 
-    return result.recordset[0]
+    // Verifica se existe algum ingresso para o associado
+    qry = ` SELECT 
+              ew.nome nomeEvento, 
+              st.descricao nomeIngresso,
+              t.descricao nomeSubingresso
+            FROM dbo.EventosEntradas ee
+            INNER JOIN dbo.EventosWeb ew ON ee.idEvento = ew.id 
+            INNER JOIN dbo.EventoSubTiposIngresso st ON ee.idSubTipoIngresso = st.id 
+            INNER JOIN dbo.EventoTiposIngresso t ON st.idTipo  = t.id 
+            WHERE ee.codigoAssociado = '${codigo}' AND ee.status = 'S' AND 
+              MONTH(ew.dataEvento) = MONTH(GETDATE()) AND YEAR(ew.dataEvento) = YEAR(GETDATE()) AND DAY(ew.dataEvento) = DAY(GETDATE())`
+    let result2 = await sql.query(qry)
+
+    return { 
+      dadosSocio: result.recordset[0], 
+      dadosIngressos: result2.recordset.length > 0 ? result2.recordset : null 
+    }
 
   } catch (err) {
 
@@ -58,15 +74,18 @@ module.exports = async (dados, faceMatcher) => {
           associados.push({
             'foto': '',
             'dados': 'unknown',
-            'detectionData': detections[i]
+            'ingressos': null
+            // 'detectionData': detections[i]
           })
         }
         else {
+          let dados = await getDadosSocio(results[i]._label)
 
           associados.push({
             'foto': fs.readFileSync(`../ReconhecimentoFacialCC-API-Fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
-            'dados': await getDadosSocio(results[i]._label),
-            'detectionData': detections[i]
+            'dados': dados.dadosSocio,
+            'ingressos': dados.dadosIngressos
+            // 'detectionData': detections[i]
           })
 
 
