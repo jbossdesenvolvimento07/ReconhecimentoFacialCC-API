@@ -52,56 +52,55 @@ async function getDadosSocio(codigo) {
 }
 
 
-module.exports = async (dados, faceMatcher) => {
+module.exports = {
+  valida: async (dados, faceMatcher) => {
+    try {
 
-  try {
-
-    let image = new Image()
-    image.src = dados[0];
-
-    const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
-    const results = await detections.map((d) => faceMatcher.findBestMatch(d.descriptor))
-    console.log('> Reconhecimento <')
-    console.log(results)
-
-    const associados = []
-
-    if (results.length > 0) {
-
-      for (let i = 0; i < results.length; i++) {
-
-        if (results[i]._label === 'unknown') {
-          associados.push({
-            'foto': '',
-            'dados': 'unknown',
-            'ingressos': null
-            // 'detectionData': detections[i]
-          })
+      let image = new Image()
+      image.src = dados[0];
+  
+      const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
+      const results = await detections.map((d) => faceMatcher.findBestMatch(d.descriptor))
+      console.log('> Reconhecimento <')
+      console.log(results)
+  
+      const associados = []
+  
+      if (results.length > 0) {
+  
+        for (let i = 0; i < results.length; i++) {
+  
+          if (results[i]._label === 'unknown') {
+            associados.push({
+              'foto': '',
+              'dados': 'unknown',
+              'ingressos': null
+              // 'detectionData': detections[i]
+            })
+          }
+          else {
+            let dados = await getDadosSocio(results[i]._label)
+  
+            associados.push({
+              'foto': fs.readFileSync(`../ReconhecimentoFacialCC-API-Fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
+              'dados': dados.dadosSocio,
+              'ingressos': dados.dadosIngressos
+              // 'detectionData': detections[i]
+            })
+  
+  
+          }
+  
         }
-        else {
-          let dados = await getDadosSocio(results[i]._label)
-
-          associados.push({
-            'foto': fs.readFileSync(`../ReconhecimentoFacialCC-API-Fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
-            'dados': dados.dadosSocio,
-            'ingressos': dados.dadosIngressos
-            // 'detectionData': detections[i]
-          })
-
-
-        }
-
+  
       }
-
+  
+      return associados
+  
+    } catch (err) {
+        
+      throw (err)
+  
     }
-
-    return associados
-
-  } catch (err) {
-      
-    throw (err)
-
   }
-
-
 }

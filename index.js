@@ -251,7 +251,7 @@ app.post('/validar', (req, res) => {
 
   const dados = [dataUrl]
 
-  validacao(dados, faceMatcher)
+  validacao.valida(dados, faceMatcher)
     .then((result) => {
       res.send(result)
     })
