@@ -257,6 +257,7 @@ app.post('/validar', (req, res) => {
     })
     .catch((err) => {
       console.log('> Erro na validação <')
+      console.log(err)
       res.send([])
     })
 })
