@@ -98,7 +98,7 @@ module.exports = async (dados, faceMatcher) => {
     return associados
 
   } catch (err) {
-    console.log(err)
+    throw (err)
   }
 
 }
