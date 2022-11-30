@@ -54,50 +54,51 @@ async function getDadosSocio(codigo) {
 
 module.exports = async (dados, faceMatcher) => {
 
-  let image = new Image()
-  image.src = dados[0];
-  
   try {
+
+    let image = new Image()
+    image.src = dados[0];
+
     const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
     const results = await detections.map((d) => faceMatcher.findBestMatch(d.descriptor))
     console.log('> Reconhecimento <')
     console.log(results)
 
-  } catch (err) {
-    throw (err)
-  }
+    const associados = []
 
-  const associados = []
+    if (results.length > 0) {
 
-  if (results.length > 0) {
+      for (let i = 0; i < results.length; i++) {
 
-    for (let i = 0; i < results.length; i++) {
+        if (results[i]._label === 'unknown') {
+          associados.push({
+            'foto': '',
+            'dados': 'unknown',
+            'ingressos': null
+            // 'detectionData': detections[i]
+          })
+        }
+        else {
+          let dados = await getDadosSocio(results[i]._label)
 
-      if (results[i]._label === 'unknown') {
-        associados.push({
-          'foto': '',
-          'dados': 'unknown',
-          'ingressos': null
-          // 'detectionData': detections[i]
-        })
-      }
-      else {
-        let dados = await getDadosSocio(results[i]._label)
+          associados.push({
+            'foto': fs.readFileSync(`../ReconhecimentoFacialCC-API-Fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
+            'dados': dados.dadosSocio,
+            'ingressos': dados.dadosIngressos
+            // 'detectionData': detections[i]
+          })
 
-        associados.push({
-          'foto': fs.readFileSync(`../ReconhecimentoFacialCC-API-Fotos/${results[i]._label}/imagem0.txt`, 'utf-8'),
-          'dados': dados.dadosSocio,
-          'ingressos': dados.dadosIngressos
-          // 'detectionData': detections[i]
-        })
 
+        }
 
       }
 
     }
 
-  }
+    return associados
 
-  return associados
+  } catch (err) {
+    throw new Error(err)
+  }
 
 }
