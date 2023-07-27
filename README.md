@@ -21,7 +21,7 @@
 
 1. Se a máquina tiver o node instalado desinstale-o juntamente com versões atuais do python.
 
-2. [Baixe](https://nodejs.org/en/) a versão LTS atual do node.
+2. [Baixe](https://nodejs.org/en/) a versão **16.16.0** do node.
 
 3. Na etapa de "Tools For Native Modules" marque a checkbox apresentada.
 
